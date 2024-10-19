@@ -1,8 +1,5 @@
 package com.galal.movies.screens.MovieListScreen.view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +50,6 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
     val popularMovies = viewModel.popularMovies.collectAsState()
     val upcomingMovies = viewModel.upcomingMovies.collectAsState()
 
-    var searchQuery by remember { mutableStateOf("") }
 
     // Fetch the movies
     LaunchedEffect(Unit) {
@@ -84,7 +80,6 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
             }
         }
     }else{
-        // Use LazyColumn for the vertical layout
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             item {
                 AppHeader(title = stringResource(R.string.home))
@@ -177,8 +172,6 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
         }
     }
 }
-
-
 
 @Composable
 fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {

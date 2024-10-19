@@ -24,6 +24,7 @@ import com.galal.movies.data.repository.MovieRepositoryImp
 import com.galal.movies.screens.MovieDetailScreen.view.MovieDetailScreen
 import com.galal.movies.screens.MovieListScreen.view.MovieListScreen
 import com.galal.movies.screens.MovieListScreen.viewModel.MovieViewModel
+import com.galal.movies.screens.Splash.SplashScreen
 import com.galal.movies.ui.theme.MoviesTheme
 import com.galal.movies.utils.Constants
 import retrofit2.Retrofit
@@ -44,16 +45,16 @@ class MainActivity : ComponentActivity() {
             MoviesTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-
                     Scaffold { paddingValues ->
-                        NavHost(navController = navController, startDestination = "movie_list", modifier = Modifier.padding(paddingValues))
-                        {
+                        NavHost(navController = navController, startDestination = "splash_screen", modifier = Modifier.padding(paddingValues)) {
+                            composable("splash_screen") {
+                                SplashScreen(navHostController = navController)
+                            }
                             composable("movie_list") {
                                 MovieListScreen(viewModel = movieViewModel) { movieId ->
-                                    navController.navigate("movie_detail/$movieId")
+                                    //navController.navigate("movie_detail/$movieId")
                                 }
                             }
-
                         }
                     }
                 }

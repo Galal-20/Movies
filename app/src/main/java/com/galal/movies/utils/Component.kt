@@ -68,17 +68,12 @@ fun AppHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 8.dp) // Adjust padding for the TextField
+                .padding(end = 50.dp)
         )
-
-
-        Image(
-            painter = painterResource(R.drawable.search),
-            contentDescription = "",
-            modifier = Modifier.padding(end = 16.dp)
-        )
+        image
     }
 }
+
 
 @Composable
 fun LoadingIndicator() {
