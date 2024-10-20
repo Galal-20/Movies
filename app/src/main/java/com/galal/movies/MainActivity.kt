@@ -21,10 +21,10 @@ import com.galal.movies.screens.MovieDetailScreen.viewModel.DetailViewModelFacto
 import com.galal.movies.screens.MovieListScreen.view.MovieListScreen
 import com.galal.movies.screens.MovieListScreen.viewModel.MovieViewModel
 import com.galal.movies.screens.MovieListScreen.viewModel.MovieViewModelFactory
-import com.galal.movies.screens.Splash.SplashScreen
 import com.galal.movies.screens.Search.view.SearchScreen
 import com.galal.movies.screens.Search.viewModel.SearchViewModel
 import com.galal.movies.screens.Search.viewModel.SearchViewModelFactory
+import com.galal.movies.screens.Splash.SplashScreen
 import com.galal.movies.ui.theme.MoviesTheme
 
 
@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
         val searchViewModel: SearchViewModel by viewModels {
             SearchViewModelFactory(MovieRepositoryImp(ApiClient.movieApi))
         }
+
         setContent {
             MoviesTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {

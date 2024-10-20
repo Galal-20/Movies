@@ -15,10 +15,10 @@ class SearchViewModel(private val repository: MovieRepository) : ViewModel() {
     val searchResults: StateFlow<ApiState<List<Movie>>> = _searchResults
 
     init {
-        getAllMovies()
+        viewModelScope.launch { getAllMovies() }
     }
 
-    private fun getAllMovies() {
+   suspend  fun getAllMovies() {
         viewModelScope.launch {
             _searchResults.value = ApiState.Loading
 
@@ -35,7 +35,7 @@ class SearchViewModel(private val repository: MovieRepository) : ViewModel() {
         }
     }
 
-    fun searchMovies(query: String) {
+    suspend fun searchMovies(query: String) {
         viewModelScope.launch {
             _searchResults.value = ApiState.Loading
             val response = repository.searchMovies(query)

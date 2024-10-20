@@ -1,23 +1,18 @@
 package com.galal.movies.screens.MovieDetailScreen.view
 
-import android.widget.Toast
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.galal.movies.R
@@ -45,15 +39,13 @@ import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Cast
 import com.galal.movies.model.Movie
 import com.galal.movies.model.MovieDetail
-import com.galal.movies.model.MovieResponse
 import com.galal.movies.screens.MovieDetailScreen.viewModel.DetailViewModel
-import com.galal.movies.screens.MovieListScreen.viewModel.MovieViewModel
+import com.galal.movies.util.networkListener
 import com.galal.movies.utils.Constants
 import com.galal.movies.utils.Constants.Companion.BASE_POSTER_IMAGE_URL
 import com.galal.movies.utils.LoadingIndicator
-import com.galal.movies.utils.ReusableLottie
+import com.galal.movies.utils.NoInternetConnection
 import com.galal.movies.utils.netflixFamily
-import networkListener
 
 @Composable
 fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: NavHostController) {
@@ -67,24 +59,11 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
 
     val isNetworkAvailable = networkListener()
     if (!isNetworkAvailable.value) {
-        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
-                Spacer(modifier = Modifier.height(10.dp))
-                androidx.compose.material.Text(
-                    stringResource(R.string.no_internet_connection),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center // Center the text
-                )
-            }
-        }
+        NoInternetConnection()
     }else {
-        Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)) {
             when (val movie = movieDetails.value) {
                 is ApiState.Loading -> {
                     LoadingIndicator()
@@ -95,71 +74,64 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
                 }
 
                 is ApiState.Failure -> {
-                    Text(
-                        text = movie.message,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    NoInternetConnection()
                 }
             }
         }
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, viewModel: DetailViewModel) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(0.dp)
-    ) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(0.dp)) {
         // Poster Image
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(Constants.BASE_BACKDROP_IMAGE_URL + movie!!.backdrop_path),
-                contentDescription = "Backdrop Image",
+            Image(painter = rememberAsyncImagePainter(Constants.BASE_BACKDROP_IMAGE_URL + movie.backdrop_path),
+                contentDescription = stringResource(R.string.backdrop_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .graphicsLayer {
-                        alpha = 0.7f
-                    })
+                    .graphicsLayer { alpha = 0.7f }
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black), startY = 100f
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black
+                            ), startY = 100f
                         )
                     )
             )
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 tint = Color.White,
-                contentDescription = "",
+                contentDescription = stringResource(R.string.back),
                 modifier = Modifier
-                    .clickable {
-                        navController.popBackStack()
-                    }
+                    .clickable { navController.popBackStack() }
                     .padding(24.dp)
             )
             Image(
                 painter = rememberAsyncImagePainter(BASE_POSTER_IMAGE_URL + movie.poster_path),
-                contentDescription = "Poster Image",
+                contentDescription = stringResource(R.string.poster_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(160.dp)
                     .height(240.dp)
                     .offset(y = 75.dp)
                     .align(Alignment.Center)
-                    .clip(
-                        RoundedCornerShape(8.dp)
-                    )
+                    .clip(RoundedCornerShape(8.dp))
             )
         }
 
@@ -181,12 +153,7 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Spacer(modifier = Modifier.height(8.dp))
 
         // Genres as Chips
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = Modifier.fillMaxWidth().wrapContentHeight(), contentAlignment = Alignment.Center) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -200,20 +167,15 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Spacer(modifier = Modifier.height(16.dp))
 
         // Movie Details Row (Release Date, Duration, Rating, Language)
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(8.dp)
+                modifier = Modifier.align(Alignment.Center).padding(8.dp)
             ) {
                 val context = LocalContext.current
                 MovieFieldDetails(stringResource(R.string.release_date), movie.release_date)
-                MovieFieldDetails(stringResource(R.string.duration), movie?.runtime.toString() + stringResource(
-                    R.string.min
-                )
+                MovieFieldDetails(stringResource(R.string.duration),
+                    movie?.runtime.toString() + stringResource(R.string.min)
                 )
                 MovieFieldDetails(stringResource(R.string.rating), stringResource(R.string.Star) + String.format("%.1f", movie.vote_average))
                 MovieFieldDetails(stringResource(R.string.language), movie.spoken_languages[0].name)
@@ -223,7 +185,7 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Spacer(modifier = Modifier.height(16.dp))
 
         // Movie Overview
-        movie.overview?.let { OverviewSection(it, movie.tagline) }
+        movie.overview?.let { movie.tagline?.let { it1 -> OverviewSection(it, it1) } }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -236,7 +198,7 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                 CastSection(castState.data)
             }
             is ApiState.Failure -> {
-                Text(text = castState.message, color = MaterialTheme.colorScheme.error)
+                NoInternetConnection()
             }
         }
 
@@ -252,11 +214,7 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                 SimilarMoviesSection(similarMovies = similarMovieState.data, navController = navController)
             }
             is ApiState.Failure -> {
-                Text(
-                    text = similarMovieState.message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                NoInternetConnection()
             }
         }
     }
@@ -307,18 +265,18 @@ private fun MovieFieldDetails(name: String, value: String) {
 }
 
 @Composable
-fun OverviewSection(overview: String, tagline: String?) {
+fun OverviewSection(overview: String, tagline: String) {
     Column {
         Text(
             modifier = Modifier.padding(horizontal = 22.dp),
-            text = "Overview",
+            text = stringResource(R.string.overview),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,color = Color.Black
         )
         Text(
             modifier = Modifier.padding(horizontal = 25.dp),
-            text = tagline!!,
+            text = tagline,
             fontFamily = netflixFamily,
             fontSize = 17.sp,
             fontStyle = FontStyle.Italic,

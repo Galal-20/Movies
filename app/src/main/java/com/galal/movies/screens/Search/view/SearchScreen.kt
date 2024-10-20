@@ -1,10 +1,5 @@
 package com.galal.movies.screens.Search.view
 
-import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +10,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,39 +29,30 @@ import com.galal.movies.R
 import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Movie
 import com.galal.movies.screens.Search.viewModel.SearchViewModel
+import com.galal.movies.util.networkListener
 import com.galal.movies.utils.Constants
 import com.galal.movies.utils.LoadingIndicator
-import com.galal.movies.utils.ReusableLottie
-import networkListener
+import com.galal.movies.utils.NoInternetConnection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = viewModel()) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
+    val searchResults by viewModel.searchResults.collectAsState()
     var isGridVisible by remember { mutableStateOf(false) }
-
     val isNetworkAvailable = networkListener()
-    if (!isNetworkAvailable.value){
-        Box(modifier = Modifier.fillMaxSize().background(Color.White),
-            contentAlignment = Alignment.Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    stringResource(R.string.no_internet_connection),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = Color.Black
-                )
-            }
-        }
-    }else{
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
+
+    if (!isNetworkAvailable.value){
+        NoInternetConnection()
+    }
+    else{
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -74,7 +60,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                     .padding(top = 0.dp, start = 5.dp)
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
                 }
                 Text(
                     text = stringResource(R.string.search),
@@ -94,14 +80,21 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                 onValueChange = { value ->
                     query = value
                     if (query.text.isNotEmpty()) {
-                        viewModel.searchMovies(query.text)
-                        isGridVisible = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.searchMovies(query.text)
+                            isGridVisible = true
+                        }
+                    }else{
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.getAllMovies()
+                        }
+
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
-                label = { Text("Search Movies", color = Color.Black) },
+                label = { Text(stringResource(R.string.search_movies), color = Color.Black) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.Black,
@@ -111,7 +104,6 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
             )
 
             // Display Search Results
-            val searchResults by viewModel.searchResults.collectAsState()
             when (searchResults) {
                 is ApiState.Success -> {
                     val movies = (searchResults as ApiState.Success<List<Movie>>).data
@@ -121,26 +113,22 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                         MovieInfoMessage(isEmpty = true)
                     }
                 }
-                is ApiState.Loading -> {
-                    LoadingIndicator()
-                }
-                is ApiState.Failure -> {
-                    Text(
-                        text = (searchResults as ApiState.Failure).message,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
+                is ApiState.Loading -> LoadingIndicator()
+
+                is ApiState.Failure -> NoInternetConnection()
+
             }
         }
     }
-
 }
 
 @Composable
 fun MovieList(movies: List<Movie>, navController: NavHostController) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(130.dp),
-        modifier = Modifier.fillMaxSize().fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxWidth(),
         contentPadding = PaddingValues(10.dp),
         horizontalArrangement = Arrangement.spacedBy(50.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -155,9 +143,9 @@ fun MovieList(movies: List<Movie>, navController: NavHostController) {
 @Composable
 fun MovieItem(movie: Movie, navController: NavHostController) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable {
-                // Navigate to MovieDetailScreen, pass the movie id
                 navController.navigate("movie_detail/${movie.id}")
             },
         horizontalAlignment = Alignment.CenterHorizontally
@@ -187,12 +175,8 @@ fun MovieItem(movie: Movie, navController: NavHostController) {
 
 @Composable
 fun MovieInfoMessage(isEmpty: Boolean) {
-    val message = if (isEmpty) {
-        "No Movies found. Try adjusting your search."
-    } else {
-        ""
-    }
-        Text(
+    val message = if (isEmpty) stringResource(R.string.error_message) else stringResource(R.string.error_message)
+    Text(
             message,
             modifier = Modifier.padding(top = 17.dp, start = 27.dp),
             style = MaterialTheme.typography.body2,
@@ -200,3 +184,4 @@ fun MovieInfoMessage(isEmpty: Boolean) {
         )
 
 }
+

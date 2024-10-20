@@ -21,6 +21,11 @@ class MovieViewModel(private val repository: MovieRepositoryImp) : ViewModel() {
     val upcomingMovies: StateFlow<ApiState<List<Movie>>> = _upcomingMovies
 
 
+    init {
+        fetchNowPlayingMovies()
+        fetchPopularMovies()
+        fetchUpcomingMovies()
+    }
 
     fun fetchNowPlayingMovies() {
         viewModelScope.launch {
@@ -57,9 +62,5 @@ class MovieViewModel(private val repository: MovieRepositoryImp) : ViewModel() {
             }
         }
     }
-
-
-
-
 
 }

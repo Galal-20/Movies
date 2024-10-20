@@ -77,3 +77,9 @@ data class Cast(
     val name: String,
     val profile_path: String?
 )
+
+data class GenreResponse(
+    val genres: List<Genre>
+)
+
+
