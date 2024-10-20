@@ -3,11 +3,7 @@ package com.galal.movies.screens.MovieListScreen.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,13 +17,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -36,21 +30,20 @@ import com.galal.movies.R
 import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Movie
 import com.galal.movies.screens.MovieListScreen.viewModel.MovieViewModel
+import com.galal.movies.util.networkListener
 import com.galal.movies.utils.AppHeader
 import com.galal.movies.utils.Constants
 import com.galal.movies.utils.LoadingIndicator
-import com.galal.movies.utils.ReusableLottie
-import networkListener
+import com.galal.movies.utils.NoInternetConnection
+import com.galal.movies.utils.SliderWithIndicator
+
 
 @Composable
 fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
-    // Collect the movie lists as state
     val nowPlayingMovies = viewModel.nowPlayingMovies.collectAsState()
     val popularMovies = viewModel.popularMovies.collectAsState()
     val upcomingMovies = viewModel.upcomingMovies.collectAsState()
 
-
-    // Fetch the movies
     LaunchedEffect(Unit) {
         viewModel.fetchNowPlayingMovies()
         viewModel.fetchPopularMovies()
@@ -59,50 +52,26 @@ fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, 
 
     val isNetworkAvailable = networkListener()
     if (!isNetworkAvailable.value) {
-        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment
-            .Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    stringResource(R.string.no_internet_connection),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center // Center the text
-                )
-            }
-        }
+      NoInternetConnection()
     }else{
         LazyColumn(modifier = Modifier.fillMaxWidth().background(Color.White)) {
-            item {
-                AppHeader(navController = navController,title = stringResource(R.string.home))
-            }
+            item { AppHeader(navController = navController,title = stringResource(R.string.home)) }
 
-            // Slider with Now Playing Movies
+            // Slider
             item {
-                when (val state = nowPlayingMovies.value) {
-                    is ApiState.Loading -> {
-                        LoadingIndicator()
-                    }
-                    is ApiState.Success -> {
-                        SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
-                    }
-                    is ApiState.Failure -> {
-                        Text(text = state.message, modifier = Modifier.padding(16.dp))
-                    }
+                when (val state = upcomingMovies.value) {
+                    is ApiState.Loading -> LoadingIndicator()
+                    is ApiState.Success -> SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
+                    is ApiState.Failure -> NoInternetConnection()
+
                 }
             }
 
-            // Now Playing Movies Section
+            // Now Playing
             item {
                 when (val state = nowPlayingMovies.value) {
-                    is ApiState.Loading -> {
-                        LoadingIndicator()
-                    }
+                    is ApiState.Loading -> LoadingIndicator()
+                    is ApiState.Failure -> NoInternetConnection()
                     is ApiState.Success -> {
                         Text(text = stringResource(R.string.now_playing), fontSize = 18.sp, fontWeight = FontWeight.Bold,
                             modifier = Modifier
@@ -115,18 +84,14 @@ fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, 
                             }
                         }
                     }
-                    is ApiState.Failure -> {
-                        Text(text = state.message, modifier = Modifier.padding(16.dp))
-                    }
                 }
             }
 
-            // Popular Movies Section
+            // Popular
             item {
                 when (val state = popularMovies.value) {
-                    is ApiState.Loading -> {
-                        LoadingIndicator()
-                    }
+                    is ApiState.Loading -> LoadingIndicator()
+                    is ApiState.Failure -> NoInternetConnection()
                     is ApiState.Success -> {
                         Text(text = stringResource(R.string.popular), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
                             .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
@@ -138,18 +103,14 @@ fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, 
                             }
                         }
                     }
-                    is ApiState.Failure -> {
-                        Text(text = state.message, modifier = Modifier.padding(16.dp))
-                    }
                 }
             }
 
-            // Upcoming Movies Section
+            // Upcoming
             item {
                 when (val state = upcomingMovies.value) {
-                    is ApiState.Loading -> {
-                        LoadingIndicator()
-                    }
+                    is ApiState.Loading -> LoadingIndicator()
+                    is ApiState.Failure -> NoInternetConnection()
                     is ApiState.Success -> {
                         Text(text = stringResource(R.string.upcoming), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
                             .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
@@ -161,9 +122,6 @@ fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, 
                             }
                         }
                     }
-                    is ApiState.Failure -> {
-                        Text(text = state.message, modifier = Modifier.padding(16.dp))
-                    }
                 }
             }
         }
@@ -171,7 +129,7 @@ fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, 
 }
 
 @Composable
-fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
+fun MovieItem(movie: Movie, onClick: (Int) -> Unit ) {
     Column(
         modifier = Modifier
             .width(150.dp)
@@ -189,3 +147,4 @@ fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
         Text(text = stringResource(R.string.release, movie.release_date), style = MaterialTheme.typography.body2)
     }
 }
+

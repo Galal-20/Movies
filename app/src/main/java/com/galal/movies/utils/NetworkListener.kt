@@ -1,3 +1,5 @@
+package  com.galal.movies.util
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -42,5 +44,7 @@ fun checkNetworkStatus(context: Context): Boolean {
     val activeNetwork = connectivityManager.activeNetwork ?: return false
     val networkCapabilities =
         connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    return networkCapabilities.hasCapability(
+        NetworkCapabilities.NET_CAPABILITY_INTERNET,
+    )
 }

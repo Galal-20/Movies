@@ -41,7 +41,7 @@ class DetailViewModel(private val repository: MovieRepository): ViewModel() {
     fun fetchSimilarMovies(movieId: String) {
         viewModelScope.launch {
             _similarMovies.value = ApiState.Loading
-            val response = repository.getSimilarMoviesRepo(movieId)
+            val response = repository.getSimilarMovies(movieId)
             if (response is ApiState.Success) {
                 _similarMovies.value = ApiState.Success(response.data.results)
             }else if (response is ApiState.Failure) {

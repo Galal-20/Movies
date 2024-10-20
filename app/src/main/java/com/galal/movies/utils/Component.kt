@@ -6,8 +6,11 @@ import androidx.annotation.RawRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,11 +24,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -36,18 +42,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.galal.movies.R
+import com.galal.movies.model.Movie
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun AppHeader(
-    navController: NavController,
-    title: String,
-) {
+fun AppHeader(navController: NavController, title: String, ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -139,9 +148,111 @@ fun ReusableLottie(
         )
     }
 }
+
 val netflixFamily = FontFamily(
     Font(R.font.netflixsans_bold, FontWeight.Bold),
     Font(R.font.netflixsans_regular, FontWeight.Normal),
     Font(R.font.netflixsans_medium, FontWeight.Medium)
-
 )
+
+@Composable
+fun NoInternetConnection() {
+    Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                stringResource(R.string.no_internet_connection),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovieClick: (Int) -> Unit ) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Automatically scrolls through pages with a delay
+    LaunchedEffect(pagerState) {
+        coroutineScope.launch {
+            while (true) {
+                delay(slideDuration)
+                val nextPage = (pagerState.currentPage + 1) % movies.size
+                pagerState.animateScrollToPage(nextPage)
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Horizontal pager to display the movies
+        HorizontalPager(
+            count = movies.size,
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) { page ->
+            val movie = movies[page]
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .background(color = Color(0xFFEFEEEE), shape = RoundedCornerShape(28.dp))
+                    .clickable { onMovieClick(movie.id) }
+
+            ) {
+                Image(
+                    painter = rememberImagePainter(data = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
+                    contentDescription = movie.title,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent)
+                        .clip(RoundedCornerShape(28.dp)),
+                    contentScale = ContentScale.Crop,
+                )
+                // Displaying the movie title
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        //.background(Color.Black.copy(alpha = 0.6f))
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = movie.title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            }
+        }
+
+        /* HorizontalPagerIndicator(
+             pagerState = pagerState,
+             modifier = Modifier
+                 .align(Alignment.CenterHorizontally)
+                 .padding(top = 16.dp),
+             activeColor = Color.Black,
+             inactiveColor = Color.Gray,
+             indicatorWidth = 12.dp,
+             spacing = 8.dp
+         )*/
+    }
+}
+
+

@@ -55,7 +55,7 @@ class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
         }
     }
 
-   override suspend fun getSimilarMoviesRepo(movieId: String): ApiState<MovieResponse> =
+   override suspend fun getSimilarMovies(movieId: String): ApiState<MovieResponse> =
        withContext(Dispatchers.IO){
            return@withContext try {
                ApiState.Success(movieApi.getSimilarMovies(movieId.toInt()))
@@ -72,7 +72,6 @@ class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
             ApiState.Failure(e.localizedMessage ?: "An unexpected error occurred")
         }
     }
-
 
 
 }
