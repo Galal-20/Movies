@@ -57,10 +57,10 @@ fun AppHeader(
         Box(
             modifier = Modifier
                 .size(50.dp)
-                .clip(CircleShape)
+                .clip(CircleShape),
                // .background(Color(0xFFF5F5F5))
                // .clickable { navController?.popBackStack() },
-                    ,
+
             contentAlignment = Alignment.Center
         ) {
 
