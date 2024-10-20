@@ -161,15 +161,6 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                         RoundedCornerShape(8.dp)
                     )
             )
-            /*Image(
-                painter = rememberAsyncImagePainter(model = "${Constants.BASE_BACKDROP_IMAGE_URL}${movie.poster_path}"),
-                contentDescription = movie.title,
-                modifier = Modifier
-                    .height(250.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-            )*/
-
         }
 
         Spacer(modifier = Modifier.height(80.dp))
@@ -193,8 +184,8 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(), // Use wrapContentHeight to center vertically
-            contentAlignment = Alignment.Center // Center content within the Box
+                .wrapContentHeight(),
+            contentAlignment = Alignment.Center
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -228,37 +219,13 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                 MovieFieldDetails(stringResource(R.string.language), movie.spoken_languages[0].name)
             }
         }
-        /*Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(text = "Release Date", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                Text(text = movie.release_date, style = MaterialTheme.typography.bodySmall)
-            }
-            Column {
-                Text(text = "Duration", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                Text(text = "${movie.runtime} min.", style = MaterialTheme.typography.bodySmall)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Rating", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color.Yellow)
-                    Text(text = "${movie.vote_average}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                }
-            }
-            Column {
-                Text(text = "Language", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                Text(text = movie.original_language, style = MaterialTheme.typography.bodySmall)
-            }
-        }*/
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         // Movie Overview
         movie.overview?.let { OverviewSection(it, movie.tagline) }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Movie Cast
         when (val castState = viewModel.movieCast.collectAsState().value) {
@@ -273,10 +240,8 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
             }
         }
 
-        // SimilarMediaSection
+        // SimilarSection
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Similar Movies Section
 
         val similarMovies = viewModel.similarMovies.collectAsState()
         when (val similarMovieState = similarMovies.value) {
@@ -294,9 +259,6 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                 )
             }
         }
-
-
-
     }
 }
 
@@ -377,11 +339,10 @@ fun OverviewSection(overview: String, tagline: String?) {
 
 @Composable
 fun CastSection(castList: List<Cast>) {
-    Column(modifier = Modifier.padding(25.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 22.dp)) {
         Text(text = "Cast", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.horizontalScroll(rememberScrollState())
         ) {
             castList.forEach { cast ->
@@ -391,26 +352,7 @@ fun CastSection(castList: List<Cast>) {
     }
 }
 
-/*
-@Composable
-fun CastCard(cast: Cast) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(100.dp)
-    ) {
-        val imageUrl = BASE_POSTER_IMAGE_URL + (cast.profile_path ?: "")
-        Image(
-            painter = rememberAsyncImagePainter(imageUrl),
-            contentDescription = cast.name,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = cast.name, fontSize = 12.sp, textAlign = TextAlign.Center)
-    }
-}
-*/
+
 @Composable
 fun CastMemberItem(cast: Cast) {
     Box(
@@ -445,14 +387,14 @@ fun CastMemberItem(cast: Cast) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(start = 5.dp),
             contentAlignment = Alignment.BottomStart
         ) {
             Text(
                 text = cast.name, style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontFamily = netflixFamily,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp
                 )
@@ -463,11 +405,10 @@ fun CastMemberItem(cast: Cast) {
 
 @Composable
 fun SimilarMoviesSection(similarMovies: List<Movie>, navController: NavHostController) {
-    Column(modifier = Modifier.padding(25.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 22.dp)) {
         Text(text = "Similar Movies", fontWeight = FontWeight.Bold, fontSize = 18.sp,color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.horizontalScroll(rememberScrollState())
         ) {
             similarMovies.forEach { movie ->
@@ -514,14 +455,14 @@ fun SimilarMovieItem(movie: Movie, navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(start = 5.dp),
             contentAlignment = Alignment.BottomStart
         ) {
             Text(
                 text = movie.title, style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontFamily = netflixFamily,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp
                 )
