@@ -35,6 +35,7 @@ import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Movie
 import com.galal.movies.screens.Search.viewModel.SearchViewModel
 import com.galal.movies.utils.Constants
+import com.galal.movies.utils.LoadingIndicator
 import com.galal.movies.utils.ReusableLottie
 import networkListener
 
@@ -58,7 +59,8 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
                 )
             }
         }
@@ -98,8 +100,14 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                label = { Text("Search Movies") }
+                    .padding(start = 16.dp, end = 16.dp),
+                label = { Text("Search Movies", color = Color.Black) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black,
+                    textColor = Color.Black,
+                    cursorColor = Color.Black
+                )
             )
 
             // Display Search Results
@@ -107,7 +115,6 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
             when (searchResults) {
                 is ApiState.Success -> {
                     val movies = (searchResults as ApiState.Success<List<Movie>>).data
-
                     if (movies.isNotEmpty()) {
                         MovieList(movies = movies, navController = navController)
                     } else {
@@ -115,7 +122,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                     }
                 }
                 is ApiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    LoadingIndicator()
                 }
                 is ApiState.Failure -> {
                     Text(
@@ -127,17 +134,14 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
         }
     }
 
-
-
 }
 
 @Composable
 fun MovieList(movies: List<Movie>, navController: NavHostController) {
-    // Use LazyVerticalGrid to display items in a grid
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(150.dp), // Adjust based on desired item size
+        columns = GridCells.Adaptive(130.dp),
         modifier = Modifier.fillMaxSize().fillMaxWidth(),
-        contentPadding = PaddingValues(30.dp),
+        contentPadding = PaddingValues(10.dp),
         horizontalArrangement = Arrangement.spacedBy(50.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -156,20 +160,23 @@ fun MovieItem(movie: Movie, navController: NavHostController) {
                 // Navigate to MovieDetailScreen, pass the movie id
                 navController.navigate("movie_detail/${movie.id}")
             },
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = rememberAsyncImagePainter(model = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
             contentDescription = movie.title,
             modifier = Modifier
-                .height(210.dp)
-                .clip(RoundedCornerShape(60.dp))
+                .height(200.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(80.dp))
         )
         Text(
             movie.title,
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
         Text(
             text = stringResource(R.string.release, movie.release_date),
