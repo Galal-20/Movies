@@ -1,6 +1,7 @@
 package com.galal.movies.screens.MovieListScreen.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,18 +21,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.galal.movies.R
 import com.galal.movies.data.api.ApiState
@@ -44,7 +43,7 @@ import com.galal.movies.utils.ReusableLottie
 import networkListener
 
 @Composable
-fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
+fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
     // Collect the movie lists as state
     val nowPlayingMovies = viewModel.nowPlayingMovies.collectAsState()
     val popularMovies = viewModel.popularMovies.collectAsState()
@@ -60,10 +59,8 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
 
     val isNetworkAvailable = networkListener()
     if (!isNetworkAvailable.value) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment
+            .Center) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -71,7 +68,7 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
                 ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    "No Internet Connection",
+                    stringResource(R.string.no_internet_connection),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),
@@ -80,9 +77,9 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
             }
         }
     }else{
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        LazyColumn(modifier = Modifier.fillMaxWidth().background(Color.White)) {
             item {
-                AppHeader(title = stringResource(R.string.home))
+                AppHeader(navController = navController,title = stringResource(R.string.home))
             }
 
             // Slider with Now Playing Movies
@@ -92,7 +89,7 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
                         LoadingIndicator()
                     }
                     is ApiState.Success -> {
-                        SliderWithIndicator(movies = state.data)
+                        SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
                     }
                     is ApiState.Failure -> {
                         Text(text = state.message, modifier = Modifier.padding(16.dp))
@@ -107,7 +104,7 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
                         LoadingIndicator()
                     }
                     is ApiState.Success -> {
-                        Text(text = "Now Playing", fontSize = 18.sp, fontWeight = FontWeight.Bold,
+                        Text(text = stringResource(R.string.now_playing), fontSize = 18.sp, fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
                         LazyRow(
@@ -131,7 +128,7 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
                         LoadingIndicator()
                     }
                     is ApiState.Success -> {
-                        Text(text = "Popular", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
+                        Text(text = stringResource(R.string.popular), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
                             .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
                         LazyRow(
                             modifier = Modifier.padding(start =  16.dp)
@@ -154,7 +151,7 @@ fun MovieListScreen(viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
                         LoadingIndicator()
                     }
                     is ApiState.Success -> {
-                        Text(text = "Upcoming", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
+                        Text(text = stringResource(R.string.upcoming), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
                             .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
                         LazyRow(
                             modifier = Modifier.padding(start =  16.dp)
@@ -189,6 +186,6 @@ fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
                 .clip(RoundedCornerShape(20.dp))
         )
         Text(movie.title, style = MaterialTheme.typography.body1, fontWeight = FontWeight.Bold, maxLines = 1)
-        Text("Release: ${movie.release_date}", style = MaterialTheme.typography.body2)
+        Text(text = stringResource(R.string.release, movie.release_date), style = MaterialTheme.typography.body2)
     }
 }

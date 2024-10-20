@@ -3,4 +3,16 @@
     <string name="back">Back</string>
     <string name="home">Home</string>
     <string name="home1">Home</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="release">Release: %1$s</string>
+    <string name="release_date">Release Date</string>
+    <string name="duration">Duration</string>
+    <string name="rating">Rating</string>
+    <string name="Star">"⭐ "</string>
+    <string name="language">Language</string>
+    <string name="min">" min."</string>
+    <string name="search">Search</string>
 </resources>

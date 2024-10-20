@@ -4,6 +4,7 @@ package com.galal.movies.screens.MovieListScreen.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L) {
+fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovieClick: (Int) -> Unit ) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -67,6 +68,8 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L) {
                     .fillMaxWidth()
                     .padding(8.dp)
                     .background(color = Color(0xFFEFEEEE), shape = RoundedCornerShape(28.dp))
+                    .clickable { onMovieClick(movie.id) }
+
             ) {
                 Image(
                     painter = rememberImagePainter(data = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
@@ -75,9 +78,8 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L) {
                         .fillMaxSize()
                         .background(Color.Transparent)
                         .clip(RoundedCornerShape(28.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
-
                 // Displaying the movie title
                 Box(
                     modifier = Modifier

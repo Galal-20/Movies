@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -95,14 +96,22 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.github.stevdza-san:OneTapCompose:1.0.14")
 
-/*    //rating bar
-    implementation("com.github.SmartToolFactory:Compose-RatingBar:1.1.1")
-    implementation("com.github.SmartToolFactory:Compose-RatingBar:1.0.0")
-    implementation("com.github.a914-gowtham:compose-ratingbar:1.3.12")*/
-
-/*    //Animation
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.github.stevdza-san:OneTapCompose:1.0.14")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.2-alpha")
+
+  /*  implementation ("androidx.room:room-runtime:2.5.0")
+    kapt ("androidx.room:room-compiler:2.5.0")
+    implementation ("androidx.room:room-ktx:2.5.0")
+
+*/
+    /*    //rating bar
+        implementation("com.github.SmartToolFactory:Compose-RatingBar:1.1.1")
+        implementation("com.github.SmartToolFactory:Compose-RatingBar:1.0.0")
+        implementation("com.github.a914-gowtham:compose-ratingbar:1.3.12")*/
+
+/*    //Animation
+
     */
 
 /*    // Testing

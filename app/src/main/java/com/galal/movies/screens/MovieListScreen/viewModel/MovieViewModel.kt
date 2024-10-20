@@ -20,8 +20,7 @@ class MovieViewModel(private val repository: MovieRepositoryImp) : ViewModel() {
     private val _upcomingMovies = MutableStateFlow<ApiState<List<Movie>>>(ApiState.Loading)
     val upcomingMovies: StateFlow<ApiState<List<Movie>>> = _upcomingMovies
 
-    private val _filteredMovies = MutableStateFlow<List<Movie>>(emptyList())
-    val filteredMovies: StateFlow<List<Movie>> = _filteredMovies
+
 
     fun fetchNowPlayingMovies() {
         viewModelScope.launch {
@@ -58,6 +57,9 @@ class MovieViewModel(private val repository: MovieRepositoryImp) : ViewModel() {
             }
         }
     }
+
+
+
 
 
 }

@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -39,9 +45,8 @@ import com.galal.movies.R
 
 @Composable
 fun AppHeader(
-    navController: NavController? = null,
+    navController: NavController,
     title: String,
-    image: Unit? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -53,11 +58,12 @@ fun AppHeader(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFF5F5F5))
-                .clickable { navController?.popBackStack() },
+               // .background(Color(0xFFF5F5F5))
+               // .clickable { navController?.popBackStack() },
+                    ,
             contentAlignment = Alignment.Center
         ) {
-            image
+
         }
 
         Text(
@@ -68,9 +74,17 @@ fun AppHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 50.dp)
+                .padding(end = 20.dp)
         )
-        image
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = stringResource(R.string.search),
+            modifier = Modifier.padding(end = 10.dp)
+                .size(25.dp)
+                .clickable {
+                    navController.navigate("search_screen")
+                }
+        )
     }
 }
 
@@ -125,3 +139,9 @@ fun ReusableLottie(
         )
     }
 }
+val netflixFamily = FontFamily(
+    Font(R.font.netflixsans_bold, FontWeight.Bold),
+    Font(R.font.netflixsans_regular, FontWeight.Normal),
+    Font(R.font.netflixsans_medium, FontWeight.Medium)
+
+)
