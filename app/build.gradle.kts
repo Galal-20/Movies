@@ -96,39 +96,27 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.github.stevdza-san:OneTapCompose:1.0.14")
 
+    //Animation
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.github.stevdza-san:OneTapCompose:1.0.14")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.2-alpha")
 
-  /*  implementation ("androidx.room:room-runtime:2.5.0")
-    kapt ("androidx.room:room-compiler:2.5.0")
-    implementation ("androidx.room:room-ktx:2.5.0")
-
-*/
-    /*    //rating bar
-        implementation("com.github.SmartToolFactory:Compose-RatingBar:1.1.1")
-        implementation("com.github.SmartToolFactory:Compose-RatingBar:1.0.0")
-        implementation("com.github.a914-gowtham:compose-ratingbar:1.3.12")*/
-
-/*    //Animation
-
-    */
-
-/*    // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("androidx.test:core:1.4.0")
     testImplementation("org.robolectric:robolectric:4.10")
     testImplementation("androidx.arch.core:core-testing:2.1.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("androidx.test.ext:junit:1.1.3")
-    testImplementation("org.robolectric:robolectric:4.7.3")*/
-
-  /*  // Mockito for mocking
+    testImplementation("org.robolectric:robolectric:4.7.3")
     testImplementation ("org.mockito:mockito-core:3.12.4")
     testImplementation ("org.mockito:mockito-inline:3.12.4")
     testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
-
     testImplementation ("app.cash.turbine:turbine:0.5.2")
+    testImplementation ("org.mockito:mockito-inline:3.12.4")
+    testImplementation ("io.mockk:mockk:1.13.5")
 
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")*/
+    /*  implementation ("androidx.room:room-runtime:2.5.0")
+      kapt ("androidx.room:room-compiler:2.5.0")
+      implementation ("androidx.room:room-ktx:2.5.0")
+  */
 }

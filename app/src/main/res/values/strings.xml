@@ -22,4 +22,5 @@
     <string name="error_message">No Movies found. Try adjusting your search.</string>
     <string name="backdrop_image">Backdrop Image</string>
     <string name="poster_image">Poster Image</string>
+    <string name="top_rated_movies">To rating</string>
 </resources>

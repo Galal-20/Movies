@@ -3,23 +3,17 @@ package com.galal.movies.screens.MovieListScreen.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,114 +31,138 @@ import com.galal.movies.utils.LoadingIndicator
 import com.galal.movies.utils.NoInternetConnection
 import com.galal.movies.utils.SliderWithIndicator
 
-
 @Composable
-fun MovieListScreen(navController: NavHostController,viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
+fun MovieListScreen(navController: NavHostController, viewModel: MovieViewModel, onMovieClick: (Int) -> Unit) {
     val nowPlayingMovies = viewModel.nowPlayingMovies.collectAsState()
     val popularMovies = viewModel.popularMovies.collectAsState()
     val upcomingMovies = viewModel.upcomingMovies.collectAsState()
+    val topRateMovies = viewModel.rateMovies.collectAsState()
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchNowPlayingMovies()
         viewModel.fetchPopularMovies()
         viewModel.fetchUpcomingMovies()
+        viewModel.fetchToRateMovies()
     }
 
     val isNetworkAvailable = networkListener()
     if (!isNetworkAvailable.value) {
-      NoInternetConnection()
-    }else{
-        LazyColumn(modifier = Modifier.fillMaxWidth().background(Color.White)) {
-            item { AppHeader(navController = navController,title = stringResource(R.string.home)) }
+        //NoInternetConnection()
+    } else
+    {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+        ) {
+            AppHeader(navController = navController, title = stringResource(R.string.home))
 
-            // Slider
-            item {
-                when (val state = upcomingMovies.value) {
-                    is ApiState.Loading -> LoadingIndicator()
-                    is ApiState.Success -> SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
-                    is ApiState.Failure -> NoInternetConnection()
+            //Spacer(modifier = Modifier.height(0.dp))
+            // Slider for Upcoming Movies
+            when (val state = upcomingMovies.value) {
+                is ApiState.Loading -> LoadingIndicator()
+                is ApiState.Success -> SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
+                is ApiState.Failure -> NoInternetConnection()
+            }
 
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Tab Layout
+            val tabTitles = listOf(
+                stringResource(R.string.now_playing),
+                stringResource(R.string.popular),
+                stringResource(R.string.upcoming),
+                stringResource(R.string.top_rated_movies)
+            )
+
+            ScrollableTabRow(
+                selectedTabIndex = selectedTabIndex,
+                backgroundColor = Color.Black,
+                contentColor = Color.White,
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                tabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(title) }
+                    )
                 }
             }
 
-            // Now Playing
-            item {
-                when (val state = nowPlayingMovies.value) {
-                    is ApiState.Loading -> LoadingIndicator()
-                    is ApiState.Failure -> NoInternetConnection()
-                    is ApiState.Success -> {
-                        Text(text = stringResource(R.string.now_playing), fontSize = 18.sp, fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
-                        LazyRow(
-                            modifier = Modifier.padding(start =  16.dp)
-                        ) {
-                            items(state.data) { movie ->
-                                MovieItem(movie = movie, onClick = onMovieClick)
-                            }
-                        }
-                    }
-                }
+            when (selectedTabIndex) {
+                0 -> MovieListContent(nowPlayingMovies.value, onMovieClick)
+                1 -> MovieListContent(popularMovies.value, onMovieClick)
+                2 -> MovieListContent(upcomingMovies.value, onMovieClick)
+                3 -> MovieListContent(topRateMovies.value, onMovieClick)
             }
+        }
+    }
 
-            // Popular
-            item {
-                when (val state = popularMovies.value) {
-                    is ApiState.Loading -> LoadingIndicator()
-                    is ApiState.Failure -> NoInternetConnection()
-                    is ApiState.Success -> {
-                        Text(text = stringResource(R.string.popular), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
-                            .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
-                        LazyRow(
-                            modifier = Modifier.padding(start =  16.dp)
-                        ) {
-                            items(state.data) { movie ->
-                                MovieItem(movie = movie, onClick = onMovieClick)
-                            }
-                        }
-                    }
-                }
-            }
+}
 
-            // Upcoming
-            item {
-                when (val state = upcomingMovies.value) {
-                    is ApiState.Loading -> LoadingIndicator()
-                    is ApiState.Failure -> NoInternetConnection()
-                    is ApiState.Success -> {
-                        Text(text = stringResource(R.string.upcoming), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier
-                            .padding(start = 18.dp, top = 16.dp, bottom = 8.dp))
-                        LazyRow(
-                            modifier = Modifier.padding(start =  16.dp)
-                        ) {
-                            items(state.data) { movie ->
-                                MovieItem(movie = movie, onClick = onMovieClick)
-                            }
-                        }
-                    }
+@Composable
+fun MovieListContent(movieState: ApiState<List<Movie>>, onMovieClick: (Int) -> Unit) {
+    when (movieState) {
+        is ApiState.Loading -> LoadingIndicator()
+        is ApiState.Failure -> ""
+        is ApiState.Success -> {
+            LazyRow(
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                items(movieState.data) { movie ->
+                    MovieItem(movie = movie, onClick = onMovieClick)
                 }
             }
         }
     }
 }
 
+
 @Composable
-fun MovieItem(movie: Movie, onClick: (Int) -> Unit ) {
-    Column(
+fun MovieItem(movie: Movie, onClick: (Int) -> Unit) {
+    Card(
         modifier = Modifier
-            .width(150.dp)
-            .padding(8.dp)
-            .clickable { onClick(movie.id) }
+            .width(230.dp).background(Color.White)
+            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 20.dp)
+            .clickable { onClick(movie.id) },
+        elevation = 10.dp,
+        shape = RoundedCornerShape(30.dp)
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
-            contentDescription = movie.title,
-            modifier = Modifier
-                .height(200.dp)
-                .clip(RoundedCornerShape(20.dp))
-        )
-        Text(movie.title, style = MaterialTheme.typography.body1, fontWeight = FontWeight.Bold, maxLines = 1)
-        Text(text = stringResource(R.string.release, movie.release_date), style = MaterialTheme.typography.body2)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
+                contentDescription = movie.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(30.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                movie.title,
+                style = MaterialTheme.typography.body1.copy(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                maxLines = 1,
+                modifier = Modifier.padding(top = 15.dp)
+            )
+            Text(
+                text = stringResource(R.string.release, movie.release_date),
+                style = MaterialTheme.typography.body2.copy(
+                    fontSize = 16.sp
+                ),
+                modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)
+            )
+        }
     }
 }
-
