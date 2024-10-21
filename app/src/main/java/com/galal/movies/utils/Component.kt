@@ -181,7 +181,6 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Automatically scrolls through pages with a delay
     LaunchedEffect(pagerState) {
         coroutineScope.launch {
             while (true) {
@@ -198,13 +197,12 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
             .padding(start = 10.dp, end = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Horizontal pager to display the movies
         HorizontalPager(
             count = movies.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(250.dp)
         ) { page ->
             val movie = movies[page]
             Box(
@@ -224,7 +222,6 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
                         .clip(RoundedCornerShape(28.dp)),
                     contentScale = ContentScale.Crop,
                 )
-                // Displaying the movie title
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
@@ -242,16 +239,6 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
             }
         }
 
-        /* HorizontalPagerIndicator(
-             pagerState = pagerState,
-             modifier = Modifier
-                 .align(Alignment.CenterHorizontally)
-                 .padding(top = 16.dp),
-             activeColor = Color.Black,
-             inactiveColor = Color.Gray,
-             indicatorWidth = 12.dp,
-             spacing = 8.dp
-         )*/
     }
 }
 

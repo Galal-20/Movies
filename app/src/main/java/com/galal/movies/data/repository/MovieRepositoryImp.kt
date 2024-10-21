@@ -73,6 +73,15 @@ class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
         }
     }
 
+    override suspend fun getToRateMovies(): ApiState<MovieResponse> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val response = movieApi.getToRateMovies()
+            ApiState.Success(response)
+        } catch (e: Exception) {
+            ApiState.Failure(e.localizedMessage ?: "An unexpected error occurred")
+        }
+    }
+
 
 }
 

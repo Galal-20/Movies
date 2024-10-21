@@ -25,9 +25,14 @@ class SearchViewModel(private val repository: MovieRepository) : ViewModel() {
             val nowPlaying = repository.getNowPlayingMovies()
             val popular = repository.getPopularMovies()
             val upcoming = repository.getUpcomingMovies()
+            val topRate = repository.getToRateMovies()
 
-            if (nowPlaying is ApiState.Success && popular is ApiState.Success && upcoming is ApiState.Success) {
-                val combinedMovies = nowPlaying.data.results + popular.data.results + upcoming.data.results
+            if (nowPlaying is ApiState.Success &&
+                popular is ApiState.Success &&
+                upcoming is ApiState.Success &&
+                topRate is ApiState.Success) {
+                val combinedMovies = nowPlaying.data.results + popular.data.results + upcoming
+                    .data.results + topRate.data.results
                 _searchResults.value = ApiState.Success(combinedMovies)
             } else {
                 _searchResults.value = ApiState.Failure("Failed to load all movies")

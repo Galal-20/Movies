@@ -13,4 +13,5 @@ interface MovieRepository {
     suspend fun getMovieCredits(movieId: Int): ApiState<List<Cast>>
     suspend fun getSimilarMovies(movieId: String): ApiState<MovieResponse>
     suspend fun searchMovies(query: String): ApiState<MovieResponse>
+    suspend fun getToRateMovies(): ApiState<MovieResponse>
 }
