@@ -48,12 +48,11 @@ fun MovieListScreen(navController: NavHostController, viewModel: MovieViewModel,
     {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Color.White)
         ) {
             AppHeader(navController = navController, title = stringResource(R.string.home))
 
-            //Spacer(modifier = Modifier.height(0.dp))
             // Slider
             when (val state = getMovies.value ) {
                 is ApiState.Loading -> LoadingIndicator()

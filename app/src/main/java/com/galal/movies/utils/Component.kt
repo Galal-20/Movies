@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -103,8 +104,11 @@ fun LoadingIndicator() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
-        contentAlignment = Alignment.Center
+            .height(200.dp)
+            .testTag("CircularProgressIndicator")
+        ,
+        contentAlignment = Alignment.Center,
+
     ) {
         CircularProgressIndicator(color = Color.Black)
     }
@@ -115,7 +119,7 @@ fun ReusableLottie(
     @RawRes lottieRes: Int,
     backgroundImageRes: Int?,
     size: Dp? = null,
-    speed: Float = 1f
+    speed: Float = 1f,
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieRes))
     val progress by animateLottieCompositionAsState(
@@ -131,6 +135,7 @@ fun ReusableLottie(
             .padding(top = 10.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color.Transparent)
+
     ) {
         // Background Image
         if (backgroundImageRes != null) {
@@ -145,15 +150,10 @@ fun ReusableLottie(
             composition = composition,
             progress = progress,
             modifier = Modifier.fillMaxSize()
+
         )
     }
 }
-
-val netflixFamily = FontFamily(
-    Font(R.font.netflixsans_bold, FontWeight.Bold),
-    Font(R.font.netflixsans_regular, FontWeight.Normal),
-    Font(R.font.netflixsans_medium, FontWeight.Medium)
-)
 
 @Composable
 fun NoInternetConnection() {
@@ -162,7 +162,10 @@ fun NoInternetConnection() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ReusableLottie(R.raw.no_internet, null, size = 400.dp, speed = 1f)
+            ReusableLottie(
+                R.raw.no_internet,
+                null,
+                size = 400.dp, speed = 1f)
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 stringResource(R.string.no_internet_connection),
@@ -202,7 +205,7 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp)
+                .height(220.dp)
         ) { page ->
             val movie = movies[page]
             Box(
@@ -241,5 +244,12 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
 
     }
 }
+
+
+val netflixFamily = FontFamily(
+    Font(R.font.netflixsans_bold, FontWeight.Bold),
+    Font(R.font.netflixsans_regular, FontWeight.Normal),
+    Font(R.font.netflixsans_medium, FontWeight.Medium)
+)
 
 
