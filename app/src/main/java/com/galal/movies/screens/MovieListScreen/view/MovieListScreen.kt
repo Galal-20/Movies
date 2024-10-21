@@ -39,9 +39,9 @@ fun MovieListScreen(navController: NavHostController, viewModel: MovieViewModel,
     val topRateMovies = viewModel.rateMovies.collectAsState()
     val getMovies = viewModel.getMovies.collectAsState()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-
-
     val isNetworkAvailable = networkListener()
+
+
     if (!isNetworkAvailable.value) {
         NoInternetConnection()
     } else

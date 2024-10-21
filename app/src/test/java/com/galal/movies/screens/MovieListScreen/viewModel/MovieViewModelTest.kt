@@ -37,7 +37,6 @@ class MovieViewModelTest {
 
     @Test
     fun `fetchNowPlayingMovies success updates state to Success`() = runTest {
-        // Arrange: Set up the expected result
         val expectedMovies = listOf(
             Movie(id = 1, title = "Movie 1","1111", "aaaa"),
             Movie(id = 2, title = "Movie 2", "2222", "bbbb"))
