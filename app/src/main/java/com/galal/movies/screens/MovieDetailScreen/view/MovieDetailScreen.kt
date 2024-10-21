@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -61,9 +62,10 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
     if (!isNetworkAvailable.value) {
         NoInternetConnection()
     }else {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.White)) {
             when (val movie = movieDetails.value) {
                 is ApiState.Loading -> {
                     LoadingIndicator()
@@ -84,10 +86,12 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
 @SuppressLint("DefaultLocale")
 @Composable
 fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, viewModel: DetailViewModel) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(0.dp)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(0.dp))
+    {
         // Poster Image
         Box(
             modifier = Modifier
@@ -319,7 +323,6 @@ fun CastSection(castList: List<Cast>) {
     }
 }
 
-
 @Composable
 fun CastMemberItem(cast: Cast) {
     Box(
@@ -332,7 +335,7 @@ fun CastMemberItem(cast: Cast) {
         if (cast.profile_path != null) {
             Image(
                 painter = rememberAsyncImagePainter(model = BASE_POSTER_IMAGE_URL + cast.profile_path),
-                contentDescription = null,
+                contentDescription = "Cast Member Placeholder",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -373,7 +376,7 @@ fun CastMemberItem(cast: Cast) {
 @Composable
 fun SimilarMoviesSection(similarMovies: List<Movie>, navController: NavHostController) {
     Column(modifier = Modifier.padding(horizontal = 22.dp)) {
-        Text(text = "Similar Movies", fontWeight = FontWeight.Bold, fontSize = 18.sp,color = Color.Black)
+        Text(text = stringResource(R.string.related), fontWeight = FontWeight.Bold, fontSize = 18.sp,color = Color.Black)
         Row(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.horizontalScroll(rememberScrollState())
@@ -422,10 +425,10 @@ fun SimilarMovieItem(movie: Movie, navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 5.dp),
-            contentAlignment = Alignment.BottomStart
+                .padding(start = 0.dp),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Text(
+           /* Text(
                 text = movie.title, style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontFamily = netflixFamily,
@@ -433,7 +436,7 @@ fun SimilarMovieItem(movie: Movie, navController: NavHostController) {
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp
                 )
-            )
+            )*/
         }
     }
 }

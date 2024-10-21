@@ -61,7 +61,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.navigation.testing)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.ui.test.junit4.android)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -114,6 +116,8 @@ dependencies {
     testImplementation ("app.cash.turbine:turbine:0.5.2")
     testImplementation ("org.mockito:mockito-inline:3.12.4")
     testImplementation ("io.mockk:mockk:1.13.5")
+    debugImplementation ("androidx.compose.ui:ui-tooling:1.0.0")
+
 
     /*  implementation ("androidx.room:room-runtime:2.5.0")
       kapt ("androidx.room:room-compiler:2.5.0")

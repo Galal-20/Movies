@@ -24,4 +24,5 @@
     <string name="poster_image">Poster Image</string>
     <string name="top_rated_movies">To rating</string>
     <string name="unknown">Unknown</string>
+    <string name="related">Related</string>
 </resources>

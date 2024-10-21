@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -30,6 +31,7 @@ import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Movie
 import com.galal.movies.screens.Search.viewModel.SearchViewModel
 import com.galal.movies.util.networkListener
+import com.galal.movies.utils.AppHeader
 import com.galal.movies.utils.Constants
 import com.galal.movies.utils.LoadingIndicator
 import com.galal.movies.utils.NoInternetConnection
@@ -53,26 +55,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
         Column(modifier = Modifier
             .fillMaxSize()
             .background(Color.White)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 0.dp, start = 5.dp)
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
-                }
-                Text(
-                    text = stringResource(R.string.search),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 45.dp)
-                )
-            }
+            SearchHeader(navController)
 
             // Search Bar
             OutlinedTextField(
@@ -93,7 +76,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 label = { Text(stringResource(R.string.search_movies), color = Color.Black) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
@@ -123,15 +106,42 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
 }
 
 @Composable
+private fun SearchHeader(navController: NavHostController) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 0.dp, start = 5.dp)
+    ) {
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.icon_back)
+            )
+        }
+        Text(
+            text = stringResource(R.string.search),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color.Black,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 45.dp)
+        )
+    }
+}
+
+@Composable
 fun MovieList(movies: List<Movie>, navController: NavHostController) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(130.dp),
         modifier = Modifier
             .fillMaxSize()
             .fillMaxWidth(),
-        contentPadding = PaddingValues(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(50.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        contentPadding = PaddingValues(15.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         items(movies) { movie ->
             MovieItem(movie = movie, navController = navController)
@@ -153,10 +163,11 @@ fun MovieItem(movie: Movie, navController: NavHostController) {
         Image(
             painter = rememberAsyncImagePainter(model = "${Constants.BASE_POSTER_IMAGE_URL}${movie.poster_path}"),
             contentDescription = movie.title,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .height(200.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(80.dp))
+                .clip(RoundedCornerShape(30.dp))
         )
         Text(
             movie.title,
