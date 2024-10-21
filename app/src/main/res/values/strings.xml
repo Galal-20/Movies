@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Movies</string>
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="home1">Home</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="release">Release: %1$s</string>
+    <string name="release_date">Release Date</string>
+    <string name="duration">Duration</string>
+    <string name="rating">Rating</string>
+    <string name="Star">"⭐ "</string>
+    <string name="language">Language</string>
+    <string name="min">" min."</string>
+    <string name="search">Search</string>
+    <string name="overview">Overview</string>
+    <string name="genres">Genres</string>
+    <string name="icon_back">Back</string>
+    <string name="search_movies">Search Movies</string>
+    <string name="error_message">No Movies found. Try adjusting your search.</string>
+    <string name="backdrop_image">Backdrop Image</string>
+    <string name="poster_image">Poster Image</string>
+    <string name="top_rated_movies">To rating</string>
+    <string name="unknown">Unknown</string>
+    <string name="related">Related</string>
 </resources>
