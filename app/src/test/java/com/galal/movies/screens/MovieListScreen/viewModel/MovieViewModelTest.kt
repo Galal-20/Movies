@@ -129,6 +129,48 @@ class MovieViewModelTest {
         coVerify { movieRepository.getToRateMovies() }
     }
 
+    @Test
+    fun `fetchMovies success updates state to Success with combined results`() = runTest {
+        val nowPlayingMovies = listOf(Movie(id = 1, title = "Now Playing Movie", "", ""))
+        val popularMovies = listOf(Movie(id = 2, title = "Popular Movie", "", ""))
+        val upcomingMovies = listOf(Movie(id = 3, title = "Upcoming Movie", "", ""))
+        val topRatedMovies = listOf(Movie(id = 4, title = "Top Rated Movie", "", ""))
+
+        coEvery { movieRepository.getNowPlayingMovies() } returns ApiState.Success(MovieResponse(nowPlayingMovies))
+        coEvery { movieRepository.getPopularMovies() } returns ApiState.Success(MovieResponse(popularMovies))
+        coEvery { movieRepository.getUpcomingMovies() } returns ApiState.Success(MovieResponse(upcomingMovies))
+        coEvery { movieRepository.getToRateMovies() } returns ApiState.Success(MovieResponse(topRatedMovies))
+        viewModel.fetchMovies()
+
+        val expectedCombinedMovies = nowPlayingMovies + popularMovies + upcomingMovies + topRatedMovies
+        val state = viewModel.getMovies.first()
+        assertEquals(ApiState.Success(expectedCombinedMovies), state)
+        coVerify { movieRepository.getNowPlayingMovies() }
+        coVerify { movieRepository.getPopularMovies() }
+        coVerify { movieRepository.getUpcomingMovies() }
+        coVerify { movieRepository.getToRateMovies() }
+    }
+
+    @Test
+    fun `fetchMovies failure updates state to Failure`() = runTest {
+        val errorMessage = "Failed to fetch movies"
+        coEvery { movieRepository.getNowPlayingMovies() } returns ApiState.Failure(errorMessage)
+        coEvery { movieRepository.getPopularMovies() } returns ApiState.Failure(errorMessage)
+        coEvery { movieRepository.getUpcomingMovies() } returns ApiState.Failure(errorMessage)
+        coEvery { movieRepository.getToRateMovies() } returns ApiState.Failure(errorMessage)
+
+        viewModel.fetchMovies()
+
+        val state = viewModel.getMovies.first()
+        assertEquals(ApiState.Failure("Failed to load all movies"), state)
+        coVerify { movieRepository.getNowPlayingMovies() }
+        coVerify { movieRepository.getPopularMovies() }
+        coVerify { movieRepository.getUpcomingMovies() }
+        coVerify { movieRepository.getToRateMovies() }
+    }
+
+
+
 }
 
 

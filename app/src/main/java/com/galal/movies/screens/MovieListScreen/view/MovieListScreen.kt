@@ -37,19 +37,13 @@ fun MovieListScreen(navController: NavHostController, viewModel: MovieViewModel,
     val popularMovies = viewModel.popularMovies.collectAsState()
     val upcomingMovies = viewModel.upcomingMovies.collectAsState()
     val topRateMovies = viewModel.rateMovies.collectAsState()
+    val getMovies = viewModel.getMovies.collectAsState()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchNowPlayingMovies()
-        viewModel.fetchPopularMovies()
-        viewModel.fetchUpcomingMovies()
-        viewModel.fetchToRateMovies()
-    }
-
     val isNetworkAvailable = networkListener()
     if (!isNetworkAvailable.value) {
-        //NoInternetConnection()
+        NoInternetConnection()
     } else
     {
         Column(
@@ -60,8 +54,8 @@ fun MovieListScreen(navController: NavHostController, viewModel: MovieViewModel,
             AppHeader(navController = navController, title = stringResource(R.string.home))
 
             //Spacer(modifier = Modifier.height(0.dp))
-            // Slider for Upcoming Movies
-            when (val state = upcomingMovies.value) {
+            // Slider
+            when (val state = getMovies.value ) {
                 is ApiState.Loading -> LoadingIndicator()
                 is ApiState.Success -> SliderWithIndicator(movies = state.data, onMovieClick = onMovieClick)
                 is ApiState.Failure -> NoInternetConnection()

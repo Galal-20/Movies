@@ -25,6 +25,11 @@ class MovieViewModel(private val repository: MovieRepository) : ViewModel() {
     private val _rateMovies = MutableStateFlow<ApiState<List<Movie>>>(ApiState.Loading)
     val rateMovies: StateFlow<ApiState<List<Movie>>> = _rateMovies
 
+    private val _getMovies = MutableStateFlow<ApiState<List<Movie>>>(ApiState.Loading)
+    val getMovies: StateFlow<ApiState<List<Movie>>> = _getMovies
+
+
+
 
     init {
         viewModelScope.launch {
@@ -32,9 +37,11 @@ class MovieViewModel(private val repository: MovieRepository) : ViewModel() {
             fetchPopularMovies()
             fetchUpcomingMovies()
             fetchToRateMovies()
+            fetchMovies()
         }
 
     }
+
 
     suspend fun fetchNowPlayingMovies() {
         viewModelScope.launch {
@@ -83,5 +90,29 @@ class MovieViewModel(private val repository: MovieRepository) : ViewModel() {
             }
         }
     }
+
+
+    suspend fun fetchMovies() {
+        viewModelScope.launch {
+            _getMovies.value = ApiState.Loading
+            val nowPlaying = repository.getNowPlayingMovies()
+            val popular = repository.getPopularMovies()
+            val upcoming = repository.getUpcomingMovies()
+            val topRate = repository.getToRateMovies()
+
+            if (nowPlaying is ApiState.Success &&
+                popular is ApiState.Success &&
+                upcoming is ApiState.Success &&
+                topRate is ApiState.Success) {
+                val combinedMovies = nowPlaying.data.results + popular.data.results + upcoming
+                    .data.results + topRate.data.results
+                _getMovies.value = ApiState.Success(combinedMovies)
+            } else {
+                _getMovies.value = ApiState.Failure("Failed to load all movies")
+            }
+        }
+    }
+
+
 
 }

@@ -153,7 +153,9 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Spacer(modifier = Modifier.height(8.dp))
 
         // Genres as Chips
-        Box(modifier = Modifier.fillMaxWidth().wrapContentHeight(), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(), contentAlignment = Alignment.Center) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -170,7 +172,9 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.align(Alignment.Center).padding(8.dp)
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp)
             ) {
                 val context = LocalContext.current
                 MovieFieldDetails(stringResource(R.string.release_date), movie.release_date)
@@ -178,7 +182,12 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                     movie?.runtime.toString() + stringResource(R.string.min)
                 )
                 MovieFieldDetails(stringResource(R.string.rating), stringResource(R.string.Star) + String.format("%.1f", movie.vote_average))
-                MovieFieldDetails(stringResource(R.string.language), movie.spoken_languages[0].name)
+                MovieFieldDetails(
+                    stringResource(R.string.language),
+                    if (movie.spoken_languages.isNotEmpty()) movie.spoken_languages[0].name else stringResource(
+                        R.string.unknown
+                    )
+                )
             }
         }
 
