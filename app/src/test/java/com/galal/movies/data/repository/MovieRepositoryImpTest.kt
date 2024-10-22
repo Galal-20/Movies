@@ -7,6 +7,7 @@ import com.galal.movies.model.Cast
 import com.galal.movies.model.CastResponse
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
+import com.galal.movies.model.VideoResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -173,5 +174,23 @@ class MovieRepositoryImpTest {
         val result = movieRepository.getToRateMovies()
         assertEquals(ApiState.Failure(errorMessage), result)
         coVerify(exactly = 1) { movieApi.getToRateMovies() }
+    }
+
+    @Test
+    fun `getMovieVideos success returns Success`() = runTest {
+        val movieVideos = VideoResponse(results = listOf())
+        coEvery { movieApi.getMovieVideos(1) } returns movieVideos
+        val result = movieRepository.getMovieVideos(1)
+        assertEquals(ApiState.Success(movieVideos.results), result)
+        coVerify(exactly = 1) { movieApi.getMovieVideos(1) }
+    }
+
+    @Test
+    fun `getMovieVideos failure returns Failure`() = runTest {
+        val errorMessage = "An unexpected error occurred"
+        coEvery { movieApi.getMovieVideos(1) } throws Exception(errorMessage)
+        val result = movieRepository.getMovieVideos(1)
+        assertEquals(ApiState.Failure(errorMessage), result)
+        coVerify(exactly = 1) { movieApi.getMovieVideos(1) }
     }
 }

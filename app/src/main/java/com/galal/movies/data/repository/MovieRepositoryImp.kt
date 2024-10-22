@@ -5,6 +5,7 @@ import com.galal.movies.data.api.MovieApi
 import com.galal.movies.model.Cast
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
+import com.galal.movies.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -77,6 +78,15 @@ class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
         return@withContext try {
             val response = movieApi.getToRateMovies()
             ApiState.Success(response)
+        } catch (e: Exception) {
+            ApiState.Failure(e.localizedMessage ?: "An unexpected error occurred")
+        }
+    }
+
+     override suspend fun getMovieVideos(movieId: Int): ApiState<List<Video>> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val response = movieApi.getMovieVideos(movieId)
+            ApiState.Success(response.results.filter { it.site == "YouTube" && it.type == "Trailer" })
         } catch (e: Exception) {
             ApiState.Failure(e.localizedMessage ?: "An unexpected error occurred")
         }

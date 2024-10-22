@@ -111,5 +111,31 @@ class DetailViewModelTest {
         assertEquals(ApiState.Failure(errorMessage), state)
         coVerify { movieRepository.getSimilarMovies(movieId) }
     }
+
+    @Test
+    fun `fetchMovieVideos success updates state to Success`() = runTest {
+        val movieId = 1
+        val expectedVideos = listOf(
+            Movie(id = 3, title = "Similar Movie 1", release_date = "2023-09-11", poster_path = "poster3.jpg"),
+            Movie(id = 4, title = "Similar Movie 2", release_date = "2023-09-12", poster_path = "poster4.jpg")
+        )
+        val movieResponse = MovieResponse(results = expectedVideos)
+        coEvery { movieRepository.getSimilarMovies(movieId.toString()) } returns ApiState.Success(movieResponse)
+        viewModel.fetchSimilarMovies(movieId.toString())
+        val state = viewModel.similarMovies.first()
+        assertEquals(ApiState.Success(expectedVideos), state)
+        coVerify { movieRepository.getSimilarMovies(movieId.toString()) }
+    }
+
+    @Test
+    fun `fetchMovieVideos failure updates state to Failure`() = runTest {
+        val movieId = 1
+        val errorMessage = "Failed to fetch video movies"
+        coEvery { movieRepository.getSimilarMovies(movieId.toString()) } returns ApiState.Failure(errorMessage)
+        viewModel.fetchSimilarMovies(movieId.toString())
+        val state = viewModel.similarMovies.first()
+        assertEquals(ApiState.Failure(errorMessage), state)
+        coVerify { movieRepository.getSimilarMovies(movieId.toString()) }
+    }
 }
 

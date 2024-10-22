@@ -3,6 +3,7 @@ package com.galal.movies.data.api
 import com.galal.movies.model.CastResponse
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
+import com.galal.movies.model.VideoResponse
 import com.galal.movies.utils.Constants.Companion.API_KEY
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -59,6 +60,13 @@ interface MovieApi {
         @Query("api_key") apiKey: String = API_KEY,
         @Query("language") language: String = "en"
     ): MovieResponse
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String = API_KEY
+    ): VideoResponse
+
 
 
 }

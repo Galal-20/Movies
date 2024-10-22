@@ -4,6 +4,7 @@ import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Cast
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
+import com.galal.movies.model.Video
 
 interface MovieRepository {
     suspend fun getNowPlayingMovies(): ApiState<MovieResponse>
@@ -14,4 +15,5 @@ interface MovieRepository {
     suspend fun getSimilarMovies(movieId: String): ApiState<MovieResponse>
     suspend fun searchMovies(query: String): ApiState<MovieResponse>
     suspend fun getToRateMovies(): ApiState<MovieResponse>
+    suspend fun getMovieVideos(movieId: Int): ApiState<List<Video>>
 }

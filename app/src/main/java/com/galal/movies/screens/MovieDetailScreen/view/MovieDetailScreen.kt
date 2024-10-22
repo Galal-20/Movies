@@ -1,6 +1,8 @@
 package com.galal.movies.screens.MovieDetailScreen.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,10 +54,13 @@ import com.galal.movies.utils.netflixFamily
 fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: NavHostController) {
     val movieDetails = viewModel.movieDetails.collectAsState()
 
+
     LaunchedEffect(movieId) {
         viewModel.fetchMovieDetails(movieId)
         viewModel.fetchMovieCast(movieId)
         viewModel.fetchSimilarMovies(movieId.toString())
+        viewModel.fetchMovieVideos(movieId)
+
     }
 
     val isNetworkAvailable = networkListener()
@@ -86,6 +91,10 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
 @SuppressLint("DefaultLocale")
 @Composable
 fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, viewModel: DetailViewModel) {
+    val context = LocalContext.current
+    val movieVideos = viewModel.movieVideos.collectAsState()
+
+
     Column(
         Modifier
             .fillMaxSize()
@@ -201,6 +210,34 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
         movie.overview?.let { movie.tagline?.let { it1 -> OverviewSection(it, it1) } }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (movieVideos.value is ApiState.Success && (movieVideos.value as ApiState.Success).data.isNotEmpty()) {
+            val videoKey = (movieVideos.value as ApiState.Success).data.first().key
+            val videoUrl = "https://www.youtube.com/watch?v=$videoKey"
+
+            Button(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+                    context.startActivity(intent)
+                },
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                border = BorderStroke(3.dp, Color.Black),
+            ) {
+                Text(
+                    text = stringResource(R.string.watch_trailer),
+                    color = Color.Black,
+                    fontFamily = netflixFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
 
         // Movie Cast
         when (val castState = viewModel.movieCast.collectAsState().value) {
