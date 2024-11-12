@@ -3,6 +3,7 @@ package com.galal.movies.screens.MovieDetailScreen.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.galal.movies.data.api.ApiState
+import com.galal.movies.data.local.FavoriteMovieEntity
 import com.galal.movies.data.repository.MovieRepository
 import com.galal.movies.model.Cast
 import com.galal.movies.model.Movie
@@ -54,9 +55,6 @@ class DetailViewModel(private val repository: MovieRepository): ViewModel() {
         }
     }
 
-
-
-
    suspend fun fetchMovieVideos(movieId: Int) {
         viewModelScope.launch {
             _movieVideos.value = ApiState.Loading
@@ -65,6 +63,22 @@ class DetailViewModel(private val repository: MovieRepository): ViewModel() {
         }
     }
 
-
-
+    fun addToFavorite(movie: MovieDetail) {
+        viewModelScope.launch {
+            val favoriteMovie = FavoriteMovieEntity(
+                id = movie.id,
+                title = movie.title,
+                posterPath = movie.poster_path ?: "",
+                releaseDate = movie.release_date,
+                voteAverage = movie.vote_average!!,
+                movie.overview,
+                movie.runtime,
+                movie.backdrop_path ?: "",
+                movie.tagline ?: "",
+                movie.genres.joinToString { it.name },
+                movie.spoken_languages.joinToString { it.name }
+            )
+            repository.addFavoriteMovie(favoriteMovie)
+        }
+    }
 }

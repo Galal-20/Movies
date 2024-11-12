@@ -9,8 +9,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
@@ -31,10 +28,10 @@ import com.galal.movies.data.api.ApiState
 import com.galal.movies.model.Movie
 import com.galal.movies.screens.Search.viewModel.SearchViewModel
 import com.galal.movies.util.networkListener
-import com.galal.movies.utils.AppHeader
 import com.galal.movies.utils.Constants
 import com.galal.movies.utils.LoadingIndicator
 import com.galal.movies.utils.NoInternetConnection
+import com.galal.movies.utils.AppBarHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +52,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
         Column(modifier = Modifier
             .fillMaxSize()
             .background(Color.White)) {
-            SearchHeader(navController)
+            AppBarHeader(navController, stringResource(R.string.search))
 
             // Search Bar
             OutlinedTextField(
@@ -105,32 +102,7 @@ fun SearchScreen(navController: NavHostController, viewModel: SearchViewModel = 
     }
 }
 
-@Composable
-private fun SearchHeader(navController: NavHostController) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 0.dp, start = 5.dp)
-    ) {
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.icon_back)
-            )
-        }
-        Text(
-            text = stringResource(R.string.search),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = Color.Black,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 45.dp)
-        )
-    }
-}
+
 
 @Composable
 fun MovieList(movies: List<Movie>, navController: NavHostController) {

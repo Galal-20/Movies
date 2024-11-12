@@ -3,9 +3,11 @@ package com.galal.movies.screens.MovieListScreen.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.galal.movies.data.api.ApiState
+import com.galal.movies.data.local.FavoriteMovieEntity
 import com.galal.movies.data.repository.MovieRepository
 import com.galal.movies.data.repository.MovieRepositoryImp
 import com.galal.movies.model.Movie
+import com.galal.movies.model.MovieDetail
 import com.galal.movies.util.networkListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,7 @@ class MovieViewModel(private val repository: MovieRepository) : ViewModel() {
 
     private val _getMovies = MutableStateFlow<ApiState<List<Movie>>>(ApiState.Loading)
     val getMovies: StateFlow<ApiState<List<Movie>>> = _getMovies
+
 
 
 
@@ -112,9 +115,6 @@ class MovieViewModel(private val repository: MovieRepository) : ViewModel() {
             }
         }
     }
-
-
-
 
 
 }

@@ -25,7 +25,7 @@ class MovieRepositoryImpTest {
 
     @Before
     fun setUp() {
-        movieRepository = MovieRepositoryImp(movieApi)
+        movieRepository = MovieRepositoryImp(movieApi, mockk())
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.galal.movies.screens.MovieDetailScreen.viewModel
 
 
 import com.galal.movies.data.api.ApiState
+import com.galal.movies.data.local.FavoriteMovieEntity
 import com.galal.movies.data.repository.MovieRepository
 import com.galal.movies.model.Cast
 import com.galal.movies.model.Movie
@@ -136,6 +137,48 @@ class DetailViewModelTest {
         val state = viewModel.similarMovies.first()
         assertEquals(ApiState.Failure(errorMessage), state)
         coVerify { movieRepository.getSimilarMovies(movieId.toString()) }
+    }
+
+    @Test
+    fun `addToFavorite calls repository with correct FavoriteMovieEntity`() = runTest {
+        // Arrange
+        val movieDetail = MovieDetail(
+            id = 1,
+            title = "Test Movie",
+            overview = "Test overview",
+            genres = listOf(),  // Assuming genres is a list of objects with 'name' field
+            runtime = 120,
+            release_date = "2023-09-11",
+            spoken_languages = listOf(),
+            poster_path = "testPosterPath.jpg",
+            vote_average = 8.5,
+            backdrop_path = "testBackdropPath.jpg",
+            tagline = "Test tagline"
+        )
+
+        coEvery { movieRepository.addFavoriteMovie(any()) } returns Unit
+
+        // Act
+        viewModel.addToFavorite(movieDetail)
+
+        // Assert
+        coVerify {
+            movieRepository.addFavoriteMovie(
+                FavoriteMovieEntity(
+                    id = movieDetail.id,
+                    title = movieDetail.title,
+                    posterPath = movieDetail.poster_path ?: "",
+                    releaseDate = movieDetail.release_date,
+                    voteAverage = movieDetail.vote_average!!,
+                    overview = movieDetail.overview,
+                    runtime = movieDetail.runtime,
+                    backdropPath = movieDetail.backdrop_path ?: "",
+                    tagline = movieDetail.tagline ?: "",
+                    genres = movieDetail.genres.joinToString { it.name },
+                    spokenLanguages = movieDetail.spoken_languages.joinToString { it.name }
+                )
+            )
+        }
     }
 }
 

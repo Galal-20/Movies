@@ -14,7 +14,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.galal.movies.data.api.ApiClient
+import com.galal.movies.data.local.AppDatabase
 import com.galal.movies.data.repository.MovieRepositoryImp
+import com.galal.movies.screens.FavouriteScreen.view.FavouriteScreen
+import com.galal.movies.screens.FavouriteScreen.viewModel.FavouriteViewModel
+import com.galal.movies.screens.FavouriteScreen.viewModel.FavouriteViewModelFactory
 import com.galal.movies.screens.MovieDetailScreen.view.MovieDetailScreen
 import com.galal.movies.screens.MovieDetailScreen.viewModel.DetailViewModel
 import com.galal.movies.screens.MovieDetailScreen.viewModel.DetailViewModelFactory
@@ -33,14 +37,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val appDatabase = AppDatabase.getDatabase(applicationContext)
+
         val movieViewModel: MovieViewModel by viewModels {
-            MovieViewModelFactory(MovieRepositoryImp(ApiClient.movieApi))
+            MovieViewModelFactory(MovieRepositoryImp(ApiClient.movieApi, appDatabase))
         }
         val movieDetailViewModel: DetailViewModel by viewModels {
-            DetailViewModelFactory(MovieRepositoryImp(ApiClient.movieApi))
+            DetailViewModelFactory(MovieRepositoryImp(ApiClient.movieApi, appDatabase))
         }
         val searchViewModel: SearchViewModel by viewModels {
-            SearchViewModelFactory(MovieRepositoryImp(ApiClient.movieApi))
+            SearchViewModelFactory(MovieRepositoryImp(ApiClient.movieApi, appDatabase))
+        }
+        val favouriteViewModel: FavouriteViewModel by viewModels {
+            FavouriteViewModelFactory(MovieRepositoryImp(ApiClient.movieApi, appDatabase))
         }
 
         setContent {
@@ -66,6 +75,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("search_screen") {
                                 SearchScreen(navController, searchViewModel)
+                            }
+                            composable("favourite_screen") {
+                                FavouriteScreen(navController, favouriteViewModel)
                             }
                         }
                     }

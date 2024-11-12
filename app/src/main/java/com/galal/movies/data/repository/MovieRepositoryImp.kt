@@ -2,14 +2,22 @@ package com.galal.movies.data.repository
 
 import com.galal.movies.data.api.ApiState
 import com.galal.movies.data.api.MovieApi
+import com.galal.movies.data.local.AppDatabase
+import com.galal.movies.data.local.FavoriteMovieDao
+import com.galal.movies.data.local.FavoriteMovieEntity
 import com.galal.movies.model.Cast
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
 import com.galal.movies.model.Video
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.invoke
 import kotlinx.coroutines.withContext
 
-class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
+class MovieRepositoryImp(
+    private val movieApi: MovieApi,
+    private val appDatabase: AppDatabase // Use Room database
+): MovieRepository {
+    private val favoriteMovieDao = appDatabase.favoriteMovieDao()
 
     override suspend fun getNowPlayingMovies(): ApiState<MovieResponse> = withContext(Dispatchers.IO) {
         return@withContext try {
@@ -89,6 +97,26 @@ class MovieRepositoryImp(private val movieApi: MovieApi): MovieRepository {
             ApiState.Success(response.results.filter { it.site == "YouTube" && it.type == "Trailer" })
         } catch (e: Exception) {
             ApiState.Failure(e.localizedMessage ?: "An unexpected error occurred")
+        }
+    }
+
+    override suspend fun addFavoriteMovie(movie: FavoriteMovieEntity) = withContext(Dispatchers.IO) {
+        return@withContext try {
+            favoriteMovieDao.insertFavorite(movie)
+        }catch (e: Exception){
+            throw e
+        }
+    }
+
+    override suspend fun getFavoriteMovies(): List<FavoriteMovieEntity> = withContext(Dispatchers.IO) {
+        return@withContext withContext(Dispatchers.IO) {
+            favoriteMovieDao.getAllFavoriteMovies()
+        }
+    }
+
+    override suspend fun removeFavoriteMovie(movieId: Int) = withContext(Dispatchers.IO) {
+        return@withContext(Dispatchers.IO) {
+            favoriteMovieDao.delete(movieId)
         }
     }
 

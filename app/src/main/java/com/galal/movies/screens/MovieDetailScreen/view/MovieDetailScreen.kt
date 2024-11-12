@@ -3,6 +3,7 @@ package com.galal.movies.screens.MovieDetailScreen.view
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,10 +16,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -49,10 +54,14 @@ import com.galal.movies.utils.Constants.Companion.BASE_POSTER_IMAGE_URL
 import com.galal.movies.utils.LoadingIndicator
 import com.galal.movies.utils.NoInternetConnection
 import com.galal.movies.utils.netflixFamily
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: NavHostController) {
     val movieDetails = viewModel.movieDetails.collectAsState()
+    val SnakbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
 
     LaunchedEffect(movieId) {
@@ -77,22 +86,33 @@ fun MovieDetailScreen(viewModel: DetailViewModel, movieId: Int, navController: N
                 }
 
                 is ApiState.Success -> {
-                    MovieDetailContent(movie = movie.data, navController = navController, viewModel)
+                    MovieDetailContent(movie = movie.data, navController = navController,
+                        viewModel, snackbarHostState = SnakbarHostState, coroutineScope = coroutineScope)
                 }
 
                 is ApiState.Failure -> {
                     NoInternetConnection()
                 }
             }
+            SnackbarHost(hostState = SnakbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, viewModel: DetailViewModel) {
+fun MovieDetailContent(
+    movie: MovieDetail,
+    navController: NavHostController,
+    viewModel: DetailViewModel,
+    snackbarHostState: SnackbarHostState, // Add this parameter
+    coroutineScope: CoroutineScope // Add coroutine scope
+    ) {
     val context = LocalContext.current
     val movieVideos = viewModel.movieVideos.collectAsState()
+
+    val isFavorite = remember { mutableStateOf(false) }
+
 
 
     Column(
@@ -134,6 +154,43 @@ fun MovieDetailContent(movie: MovieDetail, navController: NavHostController, vie
                 modifier = Modifier
                     .clickable { navController.popBackStack() }
                     .padding(24.dp)
+            )
+           /* Icon(
+                imageVector = Icons.Default.FavoriteBorder, // Use a favorite icon or any other suitable icon
+                tint = Color.White,
+                contentDescription = stringResource(R.string.save),
+                modifier = Modifier
+                    .clickable {
+                        viewModel.addToFavorite(movie)
+//                        Toast.makeText(context, "Movie saved!", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Movie saved!")
+                        }
+                    }
+                    .padding(24.dp)
+                    .align(Alignment.TopEnd)
+            )*/
+            Icon(
+                imageVector = if (isFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                tint = if (isFavorite.value) Color.Red else Color.White,
+                contentDescription = stringResource(R.string.save),
+                modifier = Modifier
+                    .clickable {
+                        isFavorite.value = !isFavorite.value
+                        if (isFavorite.value) {
+                            viewModel.addToFavorite(movie)
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("${movie.title} saved!")
+                            }
+                        } else {
+                          /*  viewModel.removeFromFavorite(movie)
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Movie removed from favorites!")
+                            }*/
+                        }
+                    }
+                    .padding(24.dp)
+                    .align(Alignment.TopEnd)
             )
             Image(
                 painter = rememberAsyncImagePainter(BASE_POSTER_IMAGE_URL + movie.poster_path),
@@ -477,7 +534,5 @@ fun SimilarMovieItem(movie: Movie, navController: NavHostController) {
         }
     }
 }
-
-
 
 
