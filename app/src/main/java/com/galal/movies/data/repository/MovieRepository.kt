@@ -1,6 +1,7 @@
 package com.galal.movies.data.repository
 
 import com.galal.movies.data.api.ApiState
+import com.galal.movies.data.local.FavoriteMovieEntity
 import com.galal.movies.model.Cast
 import com.galal.movies.model.MovieDetail
 import com.galal.movies.model.MovieResponse
@@ -16,4 +17,8 @@ interface MovieRepository {
     suspend fun searchMovies(query: String): ApiState<MovieResponse>
     suspend fun getToRateMovies(): ApiState<MovieResponse>
     suspend fun getMovieVideos(movieId: Int): ApiState<List<Video>>
+
+    suspend fun addFavoriteMovie(movie: FavoriteMovieEntity)
+    suspend fun getFavoriteMovies(): List<FavoriteMovieEntity>
+    suspend fun removeFavoriteMovie(movieId: Int)
 }

@@ -20,13 +20,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -73,7 +80,15 @@ fun AppHeader(navController: NavController, title: String, ) {
 
             contentAlignment = Alignment.Center
         ) {
-
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = stringResource(R.string.openfavourite),
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable {
+                        navController.navigate("favourite_screen")
+                    }
+            )
         }
 
         Text(
@@ -89,7 +104,8 @@ fun AppHeader(navController: NavController, title: String, ) {
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = stringResource(R.string.search),
-            modifier = Modifier.padding(end = 10.dp)
+            modifier = Modifier
+                .padding(end = 10.dp)
                 .size(25.dp)
                 .clickable {
                     navController.navigate("search_screen")
@@ -157,7 +173,9 @@ fun ReusableLottie(
 
 @Composable
 fun NoInternetConnection() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -244,6 +262,34 @@ fun SliderWithIndicator(movies: List<Movie>, slideDuration: Long = 3000L, onMovi
 
     }
 }
+
+@Composable
+fun AppBarHeader(navController: NavHostController, title: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 0.dp, start = 5.dp)
+    ) {
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.icon_back)
+            )
+        }
+        Text(
+            text = title,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color.Black,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 45.dp)
+        )
+    }
+}
+
 
 
 val netflixFamily = FontFamily(

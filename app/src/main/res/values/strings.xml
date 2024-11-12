@@ -26,4 +26,11 @@
     <string name="unknown">Unknown</string>
     <string name="related">Related</string>
     <string name="watch_trailer">Watch Trailer</string>
+    <string name="openfavourite">OpenFavourite</string>
+    <string name="favourite">Favourite</string>
+    <string name="delete">Delete</string>
+    <string name="delete_icon">Delete Icon</string>
+    <string name="delete_item">Delete Item</string>
+    <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete %1$s?</string>
+    <string name="save">Save</string>
 </resources>
